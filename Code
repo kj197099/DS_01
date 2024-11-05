@@ -1,0 +1,167 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Define a structure for the inventory items
+struct Item {
+    int id;
+    string name;
+    int quantity;
+    double price;
+    Item* next;
+    
+    Item(int id, const string& name, int quantity, double price)
+        : id(id), name(name), quantity(quantity), price(price), next(nullptr) {}
+};
+
+// Inventory class to manage items
+class Inventory {
+private:
+    Item* head;
+
+public:
+    Inventory() : head(nullptr) {}
+
+    // Add a new item to the inventory
+    void addItem(int id, const string& name, int quantity, double price) {
+        Item* newItem = new Item(id, name, quantity, price);
+
+        if (!head) {
+            head = newItem;
+        } else {
+            Item* temp = head;
+            while (temp->next) {
+                temp = temp->next;
+            }
+            temp->next = newItem;
+        }
+        cout << "Item added successfully!\n";
+    }
+
+    // Remove an item by ID
+    void removeItem(int id) {
+        if (!head) {
+            cout << "Inventory is empty.\n";
+            return;
+        }
+
+        if (head->id == id) {
+            Item* temp = head;
+            head = head->next;
+            delete temp;
+            cout << "Item removed successfully!\n";
+            return;
+        }
+
+        Item* temp = head;
+        while (temp->next && temp->next->id != id) {
+            temp = temp->next;
+        }
+
+        if (temp->next) {
+            Item* toDelete = temp->next;
+            temp->next = temp->next->next;
+            delete toDelete;
+            cout << "Item removed successfully!\n";
+        } else {
+            cout << "Item not found.\n";
+        }
+    }
+
+    // Search for an item by ID
+    void searchItem(int id) const {
+        Item* temp = head;
+        while (temp) {
+            if (temp->id == id) {
+                cout << "Item Found:\n";
+                cout << "ID: " << temp->id << "\n";
+                cout << "Name: " << temp->name << "\n";
+                cout << "Quantity: " << temp->quantity << "\n";
+                cout << "Price: $" << temp->price << "\n";
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Item not found.\n";
+    }
+
+    // Display all items in the inventory
+    void displayInventory() const {
+        if (!head) {
+            cout << "Inventory is empty.\n";
+            return;
+        }
+
+        Item* temp = head;
+        cout << "Inventory:\n";
+        while (temp) {
+            cout << "ID: " << temp->id << ", ";
+            cout << "Name: " << temp->name << ", ";
+            cout << "Quantity: " << temp->quantity << ", ";
+            cout << "Price: $" << temp->price << "\n";
+            temp = temp->next;
+        }
+    }
+
+    // Destructor to free memory
+    ~Inventory() {
+        Item* temp;
+        while (head) {
+            temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
+
+int main() {
+    Inventory inventory;
+    int choice;
+
+    while (true) {
+        cout << "\nInventory Management System\n";
+        cout << "1. Add Item\n";
+        cout << "2. Remove Item\n";
+        cout << "3. Search Item\n";
+        cout << "4. Display Inventory\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            int id, quantity;
+            double price;
+            string name;
+            cout << "Enter Item ID: ";
+            cin >> id;
+            cout << "Enter Item Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Enter Quantity: ";
+            cin >> quantity;
+            cout << "Enter Price: ";
+            cin >> price;
+            inventory.addItem(id, name, quantity, price);
+        } else if (choice == 2) {
+            int id;
+            cout << "Enter Item ID to remove: ";
+            cin >> id;
+            inventory.removeItem(id);
+        } else if (choice == 3) {
+            int id;
+            cout << "Enter Item ID to search: ";
+            cin >> id;
+            inventory.searchItem(id);
+        } else if (choice == 4) {
+            inventory.displayInventory();
+        } else if (choice == 5) {
+            cout << "Exiting Inventory Management System.\n";
+            break;
+        } else {
+            cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    return 0;
+}
